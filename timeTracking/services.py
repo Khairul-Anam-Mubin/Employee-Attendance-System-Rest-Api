@@ -1,7 +1,9 @@
 from timeTracking.models import Attendances
 from timeTracking.serializers import AttendanceSerializer
 from account.models import Employees
-
+from datetime import datetime
+from calendar import monthrange
+import copy
 
 class CreateAttendanceService:
     def __init__(self, reqData):
@@ -76,6 +78,17 @@ class MonthlyReportService:
                 return False
         #print("ok")
         return True
+    def IfReqDataCanValidate(self):
+        if len(self.reqData) != 2:
+            return False
+        if "Month" not in self.reqData or "Year" not in self.reqData:
+            return False
+        newData = {}
+        num_days = monthrange(int(self.reqData["Year"]), int(self.reqData["Month"]))[1]
+        newData["startDate"] = self.reqData["Year"] + "-" + self.reqData["Month"] + "-" + "01"
+        newData["endDate"] = self.reqData["Year"] + "-" + self.reqData["Month"] + "-" + str(num_days)
+        self.reqData = copy.deepcopy(newData)
+        return True
     def MonthlyReportById(self, employeeId):
         found_employee = False
         employee_firstName = ""
@@ -88,6 +101,7 @@ class MonthlyReportService:
                 break
         if found_employee == False:
             return None
+        
         all_data_by_date = Attendances.objects.filter(AccessDate__range = [str(self.reqData['startDate']), str(self.reqData['endDate'])])
         data_list_id = []
         for data in all_data_by_date:
@@ -132,6 +146,6 @@ class MonthlyReportService:
         #print(all_data_group)
         return all_data_group
     def ServiceResponse(self):
-        if self.IsValidData():
+        if self.IsValidData() or self.IfReqDataCanValidate():
             return self.MonthlyReport()
         return None    
