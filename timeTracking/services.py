@@ -21,10 +21,10 @@ class CreateAttendanceService:
             if key not in self.attendance:
                 return False
         if self.attendance['Status'] == "exit" or self.attendance['Status'] == "entry":
-            print("Valid req")
+            #print("Valid req")
             return True
-        print("InValid req")
-        print(self.attendance)
+        #print("InValid req")
+        #print(self.attendance)
         return False
     def IsEmployeeIdAndPinValid(self):
         try :
@@ -32,7 +32,7 @@ class CreateAttendanceService:
         except Employees.DoesNotExist:
             return False
         self.attendance.pop('EmployeePin', None)
-        print("pin valid")
+        #print("pin valid")
         return True
     def IsPossibleToInsertDB(self):
         if Attendances.objects.filter(EmployeeId = self.attendance['EmployeeId']).count() == 0:
@@ -46,6 +46,12 @@ class CreateAttendanceService:
         #print(self.attendance)
         #print(last_attendance_data)
         if last_attendance_data['Status'] != self.attendance['Status']:
+            if last_attendance_data['Status'] == "entry":
+                if str(last_attendance_data['SuiteNumber']) != self.attendance['SuiteNumber']:
+                    #print(str(last_attendance_data['SuiteNumber']))
+                    #print(self.attendance['SuiteNumber'])
+                    #print("here gorbor")
+                    return False
             attendance_serializer = AttendanceSerializer(data = self.attendance)
             if attendance_serializer.is_valid():
                 attendance_serializer.save()
@@ -123,8 +129,10 @@ class MonthlyReportService:
         total_sec %= 60
         s = total_sec
         total_stay_time = str(h) + ":" + str(m) + ":" + str(s)
-        entryTime = str(data_list_id[0].AccessDate) +"T" + str(data_list_id[0].AccessTime)
-        exitTime =  str(data_list_id[-1].AccessDate) + "T" + str(data_list_id[-1].AccessTime)
+        entryTime = str(data_list_id[0].AccessDate) +", " + str(data_list_id[0].AccessTime)
+        exitTime =  str(data_list_id[-1].AccessDate) + ", " + str(data_list_id[-1].AccessTime)
+        entryTime = entryTime.split('.')[0]
+        exitTime = exitTime.split('.')[0]
         postData = {
             'EmployeeId' : employeeId,
             'EmployeeFirstName' : employee_firstName,
