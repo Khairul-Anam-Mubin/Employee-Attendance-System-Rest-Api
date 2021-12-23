@@ -1,3 +1,4 @@
+import re
 from account.models import Employees
 from account.serializers import EmployeeSerializer
 
@@ -19,13 +20,22 @@ class CreateAccountService:
             if key not in self.accountData:
                 return False
         return True
-    def IsUniqueId(self):
-        try:
-            getdata = Employees.objects.get(EmployeeId = self.accountData['EmployeeId'])
-        except Employees.DoesNotExist:
-            return True
-        return False
-    def SelectAccountType(self):
+    def IsUniqueId(self): #Two Employee id can't be same.
+        countData = Employees.objects.filter(EmployeeId = self.accountData['EmployeeId']).count()
+        if countData != 0:
+            return False
+        return True
+    def IsUniqueEmail(self): #Two employee email can't be same.
+        countData = Employees.objects.filter(EmployeeEmail = self.accountData['EmployeeEmail']).count()
+        if countData != 0:
+            return False
+        return True
+    def IsUniquePhoneNumber(self): #Two employee Phone Numbmer can't be same.
+        countData = Employees.objects.filter(EmployeePhoneNumber = self.accountData['EmployeePhoneNumber']).count()
+        if countData != 0:
+            return False
+        return True
+    def SelectAccountType(self): 
         if Employees.objects.all().count() != 0:
             self.accountData['EmployeeRole'] = "member"
         else:
@@ -37,7 +47,7 @@ class CreateAccountService:
             return True
         return False
     def ServiceResponse(self):
-        if self.IsReqDataValid() and self.IsUniqueId():
+        if self.IsReqDataValid() and self.IsUniqueId() and self.IsUniqueEmail() and self.IsUniquePhoneNumber():
             self.SelectAccountType()
             if self.IsPossibleToInsertDB():
                 return self.accountData
