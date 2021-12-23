@@ -1,4 +1,4 @@
-#Employee Attendance System
+# Employee Attendance System
 
 ## Installation Guide
 
@@ -23,7 +23,7 @@
 * /monthlyReport        -> [GET] request will show current monthly reports
 * /monthlyReport        -> [POST] request with "startDate" and "endDate" json request will return the employee status in this date range
 
-#### For any invalid json request it will response with null (need to update for future)
+#### For any invalid json request it will response with null
 
 ## Project Architecture Design
 
@@ -44,8 +44,5 @@ and check validation. Also Used to insert data into database. Another class Show
 ### Frondend with Angular
 1. /employee page will show all the employee records
 2. There is Add Member button which will pop up modal to create new employee
-3. /attendance will show the current month report
+3. /attendance will show the current monthly report and there are filter options for monthly time tracking reports based on month and year.
 4. Add Attendance button will pop up modal and create attendances.
-
-N.B: For monthly report the backend api responses works good but for the sake of time 
-couldn't implement in UI. The addition will be updated soon. Github Repo: https://github.com/Khairul-Anam-Mubin/EmployeeAttendanceSystem 
